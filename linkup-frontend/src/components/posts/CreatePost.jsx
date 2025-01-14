@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import { postsAPI } from '../../services/postsApi';
 import { useAuth } from '../../contexts/AuthContext';
+import defaultAvatar from '../../assets/default-user.png';
 
 const CreatePost = ({ onPostCreated = () => {} }) => {
   const { user } = useAuth();
@@ -49,15 +50,30 @@ const CreatePost = ({ onPostCreated = () => {} }) => {
       setLoading(false);
     }
   };
+  const displayName = user?.full_name || user?.email || 'Anonymous';
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <div className="bg-slate-800 rounded-lg shadow-lg p-4">
       <div className="flex items-center space-x-3 mb-4">
-        <img
-          src={user?.profile_photo || '/default-avatar.png'}
+      {user.profile_photo ? (
+            <img 
+              src={user.profile_photo} 
+              alt={displayName}
+              className="w-10 h-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center mr-3">
+              <span className="text-lg font-medium text-slate-200">
+                {initial}
+              </span>
+            </div>
+          )}
+        {/* <img
+          src={user?.profile_photo || defaultAvatar}
           alt={user?.full_name}
           className="w-10 h-10 rounded-full object-cover"
-        />
+        /> */}
         <div className="text-slate-200 font-medium">{user?.full_name}</div>
       </div>
 

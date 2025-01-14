@@ -17,6 +17,10 @@ export const postsAPI = {
       },
     }),
   
+  // Delete a post
+  deletePost: (postId) =>
+    api.delete(`/posts/${postId}/`),
+  
   // Like/unlike a post
   likePost: (postId) => 
     api.post(`/posts/${postId}/like/`),

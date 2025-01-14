@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import UserList from './UserList';
 import FollowButton from './FollowButton';
 import PostCard from '../posts/PostCard';
-import { FaPencilAlt } from 'react-icons/fa';
+import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
 const UserProfile = () => {
@@ -120,6 +120,18 @@ const UserProfile = () => {
       setEditForm(prev => ({ ...prev, [name]: files[0] }));
     } else {
       setEditForm(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    if (window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+      try {
+        await postsAPI.deletePost(postId);
+        setUserPosts(posts => posts.filter(post => post.id !== postId));
+        toast.success('Post deleted successfully');
+      } catch (error) {
+        toast.error('Failed to delete post');
+      }
     }
   };
 
@@ -391,11 +403,21 @@ const UserProfile = () => {
               </div>
             ) : userPosts.length > 0 ? (
               userPosts.map(post => (
-                <PostCard 
-                  key={post.id} 
-                  post={post}
-                  onPostUpdate={handlePostUpdate}
-                />
+                <div key={post.id} className="relative">
+                  <PostCard 
+                    post={post}
+                    onPostUpdate={handlePostUpdate}
+                  />
+                  {isOwnProfile && (
+                    <button
+                      onClick={() => handleDeletePost(post.id)}
+                      className="absolute top-4 right-4 p-2 text-red-500 hover:text-red-400 transition-colors bg-slate-800 rounded-full"
+                      title="Delete Post"
+                    >
+                      <FaTrash size={14} />
+                    </button>
+                  )}
+                </div>
               ))
             ) : (
               <div className="text-center text-slate-400 py-8">
